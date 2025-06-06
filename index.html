@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Ultimate Chaos Confetti</title>
+  <style>
+    html, body {
+      margin: 0; padding: 0;
+      width: 100vw; height: 100vh;
+      overflow: hidden;
+      background: black;
+      touch-action: none;
+    }
+
+    .piece {
+      position: absolute;
+      object-fit: cover;
+      pointer-events: none;
+      will-change: transform;
+    }
+
+    #controls {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      padding: 10px;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 9999;
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    input[type="range"] {
+      width: 60%;
+    }
+
+    button {
+      background: #444;
+      color: white;
+      border: none;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      flex: 1;
+      margin: 2px;
+    }
+
+    #button-row {
+      display: flex;
+      gap: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="controls">
+  <div class="control-group">
+    <label>Spawn Rate</label>
+    <input type="range" id="rateSlider" min="10" max="200" value="50" />
+  </div>
+  <div class="control-group">
+    <label>Image Size</label>
+    <input type="range" id="sizeSlider" min="30" max="200" value="100" />
+  </div>
+  <div id="button-row">
+    <button id="pauseBtn">Pause</button>
+    <button id="clearBtn">Clear All</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  const pieces = [];
+  let isPaused = false;
+  let spawnInterval;
+  let spawnRate = 50;
+  let baseSize = 100;
+
+  const maxPieces = 300;
+  const lifeSpan = 30000;
+
+  const rateSlider = document.getElementById('rateSlider');
+  const sizeSlider = document.getElementById('sizeSlider');
+  const pauseBtn = document.getElementById('pauseBtn');
+  const clearBtn = document.getElementById('clearBtn');
+
+  function random(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  function spawnPiece(x = null, y = null) {
+    if (pieces.length >= maxPieces) return;
+
+    const img = document.createElement('img');
+    img.src = 'confetti.png';
+    img.className = 'piece';
+
+    const size = random(baseSize * 0.5, baseSize * 1.5);
+    img.style.width = `${size}px`;
+    img.style.height = `${size}px`;
+
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+
+    const px = x !== null ? x : random(0, w - size);
+    const py = y !== null ? y : random(0, h - size);
+
+    img.style.transform = `translate(${px}px, ${py}px)`;
+    document.body.appendChild(img);
+
+    pieces.push({
+      el: img,
+      x: px,
+      y: py,
+      size,
+      vx: random(-2.5, 2.5) || 1.5,
+      vy: random(-2.5, 2.5) || 1.5,
+      birth: performance.now()
+    });
+  }
+
+  function update() {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    const now = performance.now();
+
+    for (let i = pieces.length - 1; i >= 0; i--) {
+      const p = pieces[i];
+
+      p.x += p.vx;
+      p.y += p.vy;
+
+      if (p.x < 0 || p.x > w - p.size) p.vx *= -1;
+      if (p.y < 0 || p.y > h - p.size) p.vy *= -1;
+
+      p.x = Math.max(0, Math.min(w - p.size, p.x));
+      p.y = Math.max(0, Math.min(h - p.size, p.y));
+
+      p.el.style.transform = `translate(${p.x}px, ${p.y}px)`;
+
+      if (now - p.birth > lifeSpan) {
+        p.el.remove();
+        pieces.splice(i, 1);
+      }
+    }
+
+    requestAnimationFrame(update);
+  }
+
+  function startSpawning() {
+    clearInterval(spawnInterval);
+    spawnInterval = setInterval(() => {
+      if (!isPaused) spawnPiece();
+    }, spawnRate);
+  }
+
+  // Touch explode
+  document.body.addEventListener('pointerdown', (e) => {
+    for (let i = 0; i < 10; i++) {
+      spawnPiece(e.clientX, e.clientY);
+    }
+  });
+
+  // Resize handling
+  window.addEventListener('resize', () => {
+    for (const p of pieces) {
+      p.x = Math.min(p.x, window.innerWidth - p.size);
+      p.y = Math.min(p.y, window.innerHeight - p.size);
+    }
+  });
+
+  // Controls
+  rateSlider.oninput = () => {
+    spawnRate = parseInt(rateSlider.value);
+    startSpawning();
+  };
+
+  sizeSlider.oninput = () => {
+    baseSize = parseInt(sizeSlider.value);
+  };
+
+  pauseBtn.onclick = () => {
+    isPaused = !isPaused;
+    pauseBtn.textContent = isPaused ? 'Resume' : 'Pause';
+  };
+
+  clearBtn.onclick = () => {
+    for (const p of pieces) p.el.remove();
+    pieces.length = 0;
+  };
+
+  startSpawning();
+  update();
+})();
+</script>
+
+</body>
+</html>
