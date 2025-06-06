@@ -1,341 +1,443 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Ultimate Chaos Confetti</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
+  <title>Premium Chaos Confetti - Bouncing Mode</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
-    /* Reset & base */
+    /* Same styles as before for premium UI */
     html, body {
       margin: 0; padding: 0;
       width: 100vw; height: 100vh;
       overflow: hidden;
-      background: linear-gradient(135deg, #0a0a0a, #1a1a2e);
-      touch-action: none;
+      background: linear-gradient(135deg, #0d0d1a, #1a1a3a, #0d0d1a);
+      background-size: 400% 400%;
+      animation: bgPulse 30s ease infinite;
       font-family: 'Poppins', sans-serif;
-      color: #eee;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+      color: #e0e0ff;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
-
-    .piece {
-      position: absolute;
-      object-fit: cover;
-      pointer-events: none;
-      will-change: transform;
-      filter: drop-shadow(0 0 1px rgba(0,0,0,0.7));
+    @keyframes bgPulse {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
-
+    #container {
+      display: flex;
+      flex-direction: row;
+      height: 100vh;
+      padding: 28px;
+      gap: 36px;
+      box-sizing: border-box;
+      background: transparent;
+    }
+    #confetti-area {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      border-radius: 24px;
+      background: rgba(255 255 255 / 0.06);
+      box-shadow:
+        inset 0 0 20px rgba(255 255 255 / 0.1),
+        0 0 60px rgba(138, 119, 232, 0.25);
+      backdrop-filter: saturate(150%) blur(18px);
+      cursor: crosshair;
+      touch-action: none;
+    }
     #controls {
-      position: fixed;
-      bottom: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(30, 30, 40, 0.6);
-      backdrop-filter: blur(12px);
-      border-radius: 16px;
-      padding: 16px 24px;
-      width: calc(100% - 32px);
-      max-width: 420px;
-      box-shadow: 0 8px 24px rgba(80, 75, 180, 0.4);
-      z-index: 9999;
+      width: 340px;
+      background: rgba(26, 26, 38, 0.8);
+      border-radius: 20px;
+      box-shadow: 0 16px 38px rgba(138, 119, 232, 0.5);
+      backdrop-filter: saturate(180%) blur(20px);
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      padding: 28px 32px;
+      gap: 24px;
+      flex-shrink: 0;
       user-select: none;
     }
-
+    #controls h2 {
+      margin: 0 0 16px 0;
+      font-weight: 700;
+      font-size: 2rem;
+      letter-spacing: 0.04em;
+      color: #c4bfff;
+      text-align: center;
+      text-shadow: 0 0 6px #a58fff;
+    }
     .control-group {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 14px;
     }
-
     label {
       font-weight: 600;
       font-size: 1rem;
+      color: #aaa8e3;
       flex-shrink: 0;
-      user-select: none;
+      min-width: 120px;
     }
-
     input[type="range"] {
       -webkit-appearance: none;
       width: 100%;
-      height: 8px;
-      border-radius: 8px;
-      background: #444;
+      height: 10px;
+      border-radius: 12px;
+      background: linear-gradient(90deg, #6b62d4 0%, #a392f5 100%);
       cursor: pointer;
       transition: background 0.3s ease;
-      flex-grow: 1;
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.15);
     }
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 24px;
-      height: 24px;
-      background: #6b5dd1;
+      width: 28px;
+      height: 28px;
+      background: #a799ff;
       border-radius: 50%;
       cursor: pointer;
-      box-shadow: 0 0 6px #6b5dd1;
+      box-shadow: 0 0 12px #a799ff;
       transition: background 0.3s ease, box-shadow 0.3s ease;
-      margin-top: -8px;
+      margin-top: -10px;
+      border: 2px solid #675ed1;
     }
     input[type="range"]:hover::-webkit-slider-thumb {
-      background: #927eee;
-      box-shadow: 0 0 10px #927eee;
+      background: #c5beff;
+      box-shadow: 0 0 20px #c5beff;
     }
     input[type="range"]::-moz-range-thumb {
-      width: 24px;
-      height: 24px;
-      background: #6b5dd1;
+      width: 28px;
+      height: 28px;
+      background: #a799ff;
       border-radius: 50%;
       cursor: pointer;
-      box-shadow: 0 0 6px #6b5dd1;
+      box-shadow: 0 0 12px #a799ff;
       transition: background 0.3s ease, box-shadow 0.3s ease;
+      border: 2px solid #675ed1;
     }
-
+    .value-label {
+      width: 44px;
+      text-align: right;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #d0cdff;
+      font-feature-settings: "tnum";
+      flex-shrink: 0;
+      user-select: none;
+      text-shadow: 0 0 4px rgba(255 255 255, 0.4);
+    }
     #button-row {
       display: flex;
-      gap: 12px;
+      gap: 18px;
       justify-content: center;
     }
-
     button {
       flex: 1;
-      background: #6b5dd1;
+      background: linear-gradient(135deg, #7467e0, #a3a0f8);
       border: none;
       color: white;
-      padding: 14px 0;
-      font-size: 1.1rem;
-      font-weight: 600;
-      border-radius: 12px;
+      padding: 18px 0;
+      font-size: 1.3rem;
+      font-weight: 700;
+      border-radius: 20px;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(107, 93, 209, 0.6);
+      box-shadow: 0 8px 20px rgba(138, 119, 232, 0.8);
       transition: background 0.3s ease, transform 0.15s ease;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
       user-select: none;
+      text-shadow: 0 0 5px rgba(0,0,0,0.4);
     }
     button:hover {
-      background: #836fe2;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(131, 111, 226, 0.8);
+      background: linear-gradient(135deg, #a3a0f8, #7467e0);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(171, 159, 248, 0.9);
     }
     button:active {
       transform: translateY(0);
-      box-shadow: 0 4px 12px rgba(107, 93, 209, 0.6);
+      box-shadow: 0 8px 20px rgba(138, 119, 232, 0.7);
     }
-
-    /* Larger touch targets on mobile */
-    @media (max-width: 480px) {
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      justify-content: flex-start;
+      font-weight: 600;
+      color: #aaa8e3;
+      font-size: 1rem;
+    }
+    .toggle-group input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      cursor: pointer;
+      accent-color: #7467e0;
+      border-radius: 6px;
+      box-shadow: 0 0 8px rgba(116, 103, 224, 0.9);
+      transition: box-shadow 0.3s ease;
+    }
+    .toggle-group input[type="checkbox"]:hover {
+      box-shadow: 0 0 14px rgba(116, 103, 224, 1);
+    }
+    @media (max-width: 720px) {
+      #container {
+        flex-direction: column-reverse;
+        padding: 20px;
+        gap: 20px;
+      }
       #controls {
-        padding: 20px 20px;
-        width: 95vw;
-        max-width: none;
-      }
-      button {
-        font-size: 1.2rem;
-        padding: 18px 0;
-      }
-      input[type="range"] {
-        height: 12px;
-      }
-      input[type="range"]::-webkit-slider-thumb {
-        width: 28px;
-        height: 28px;
-        margin-top: -10px;
-      }
-      input[type="range"]::-moz-range-thumb {
-        width: 28px;
-        height: 28px;
+        width: 100%;
+        padding: 24px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(138, 119, 232, 0.35);
       }
     }
 
-    /* Numeric value display */
-    .value-label {
-      width: 36px;
-      text-align: right;
-      font-weight: 500;
-      color: #c1bff0;
+    .confetti-piece {
+      position: absolute;
+      pointer-events: none;
       user-select: none;
-      flex-shrink: 0;
-      font-size: 0.9rem;
-      font-feature-settings: "tnum";
+      will-change: transform, left, top, opacity;
+      filter:
+        drop-shadow(0 0 4px rgba(138, 119, 232, 0.7))
+        drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+      image-rendering: crisp-edges;
+      transition: filter 0.2s ease;
+      border-radius: 6px;
+      backface-visibility: hidden;
+      box-shadow: 0 0 12px rgba(171, 159, 248, 0.6);
+      user-select: none;
     }
   </style>
 </head>
 <body>
+  <div id="container">
+    <div id="confetti-area" aria-label="Confetti animation area" role="region" tabindex="0" title="Confetti bounce zone"></div>
 
-<div id="controls">
-  <div class="control-group">
-    <label for="rateSlider">Spawn Rate</label>
-    <input type="range" id="rateSlider" min="10" max="200" value="50" />
-    <div class="value-label" id="rateValue">50</div>
+    <aside id="controls" aria-label="Confetti controls">
+      <h2>Confetti Controls</h2>
+      <div class="control-group">
+        <label for="rate-slider">Spawn Rate</label>
+        <input type="range" id="rate-slider" min="1" max="60" value="25" />
+        <span class="value-label" id="rate-value">25</span>
+      </div>
+      <div class="control-group">
+        <label for="size-slider">Piece Size</label>
+        <input type="range" id="size-slider" min="20" max="80" value="48" />
+        <span class="value-label" id="size-value">48</span>
+      </div>
+      <div class="toggle-group">
+        <input type="checkbox" id="rotation-toggle" checked />
+        <label for="rotation-toggle">Enable Rotation</label>
+      </div>
+      <div id="button-row">
+        <button id="pause-btn" aria-pressed="false" aria-label="Pause or resume animation">⏸ Pause</button>
+        <button id="clear-btn" aria-label="Clear all confetti pieces">🧹 Clear</button>
+      </div>
+    </aside>
   </div>
-  <div class="control-group">
-    <label for="sizeSlider">Image Size</label>
-    <input type="range" id="sizeSlider" min="30" max="200" value="100" />
-    <div class="value-label" id="sizeValue">100</div>
-  </div>
-  <div id="button-row">
-    <button id="pauseBtn" aria-label="Pause Animation">⏸ Pause</button>
-    <button id="clearBtn" aria-label="Clear All Confetti">🗑 Clear All</button>
-  </div>
-</div>
 
 <script>
 (() => {
-  const pieces = [];
+  const confettiArea = document.getElementById('confetti-area');
+  const rateSlider = document.getElementById('rate-slider');
+  const sizeSlider = document.getElementById('size-slider');
+  const rotationToggle = document.getElementById('rotation-toggle');
+  const pauseBtn = document.getElementById('pause-btn');
+  const clearBtn = document.getElementById('clear-btn');
+  const rateValue = document.getElementById('rate-value');
+  const sizeValue = document.getElementById('size-value');
+
+  const confettiImageSrc = 'confetti.png'; // Your external confetti image (48x48 default)
+  let spawnRate = +rateSlider.value; // pieces per second
+  let pieceSize = +sizeSlider.value; // px
+  let rotationEnabled = rotationToggle.checked;
   let isPaused = false;
+  const lifeSpan = 15000; // ms confetti lives before fading
+  const maxPieces = 180;
+
+  const friction = 0.98;  // slow velocity over time
+
+  let pieces = [];
   let spawnInterval;
-  let spawnRate = 50;
-  let baseSize = 100;
 
-  const maxPieces = 300;
-  const lifeSpan = 30000;
-
-  const rateSlider = document.getElementById('rateSlider');
-  const sizeSlider = document.getElementById('sizeSlider');
-  const pauseBtn = document.getElementById('pauseBtn');
-  const clearBtn = document.getElementById('clearBtn');
-  const rateValue = document.getElementById('rateValue');
-  const sizeValue = document.getElementById('sizeValue');
-
-  function random(min, max) {
-    return Math.random() * (max - min) + min;
-  }
-
-  function spawnPiece(x = null, y = null) {
-    if (pieces.length >= maxPieces) return;
-
-    const img = document.createElement('img');
-    img.src = 'confetti.png';
-    img.className = 'piece';
-
-    const size = random(baseSize * 0.5, baseSize * 1.5);
-    img.style.width = `${size}px`;
-    img.style.height = `${size}px`;
-
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-
-    const px = x !== null ? x : random(0, w - size);
-    const py = y !== null ? y : random(0, h - size);
-
-    img.style.transform = `translate(${px}px, ${py}px) rotate(${random(0, 360)}deg)`;
-    document.body.appendChild(img);
-
-    pieces.push({
-      el: img,
-      x: px,
-      y: py,
-      size,
-      vx: random(-2.5, 2.5) || 1.5,
-      vy: random(-2.5, 2.5) || 1.5,
-      rotation: random(0, 360),
-      rotationSpeed: random(-4, 4),
-      birth: performance.now()
-    });
-  }
-
-  function update() {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    const now = performance.now();
-
-    for (let i = pieces.length - 1; i >= 0; i--) {
-      const p = pieces[i];
-
-      p.x += p.vx;
-      p.y += p.vy;
-      p.rotation += p.rotationSpeed;
-
-      // Bounce off edges
-      if (p.x < 0 || p.x > w - p.size) p.vx *= -1;
-      if (p.y < 0 || p.y > h - p.size) p.vy *= -1;
-
-      p.x = Math.max(0, Math.min(w - p.size, p.x));
-      p.y = Math.max(0, Math.min(h - p.size, p.y));
-
-      p.el.style.transform = `translate(${p.x}px, ${p.y}px) rotate(${p.rotation}deg)`;
-
-      // Fade out near lifespan end
-      const lifeRatio = (now - p.birth) / lifeSpan;
-      if (lifeRatio > 0.85) {
-        p.el.style.opacity = 1 - (lifeRatio - 0.85) / 0.15;
-      }
-
-      if (now - p.birth > lifeSpan) {
-        p.el.remove();
-        pieces.splice(i, 1);
+  function createPiece(x = null, y = null) {
+    if (pieces.length >= maxPieces) {
+      // Remove oldest piece to keep count capped
+      const oldest = pieces.shift();
+      if (oldest && oldest.parentElement === confettiArea) {
+        confettiArea.removeChild(oldest);
       }
     }
 
-    requestAnimationFrame(update);
+    const img = document.createElement('img');
+    img.src = confettiImageSrc;
+    img.className = 'confetti-piece';
+    img.style.width = pieceSize + 'px';
+    img.style.height = pieceSize + 'px';
+
+    // If no position specified, random inside container
+    img._x = (x !== null) ? x : Math.random() * (confettiArea.clientWidth - pieceSize);
+    img._y = (y !== null) ? y : Math.random() * (confettiArea.clientHeight - pieceSize);
+
+    // Velocity: random direction & speed (livelier movement)
+    const speedMin = 2.8;
+    const speedMax = 5.0;
+    const angle = Math.random() * 2 * Math.PI;
+    const speed = speedMin + Math.random() * (speedMax - speedMin);
+    img._velocityX = Math.cos(angle) * speed;
+    img._velocityY = Math.sin(angle) * speed;
+
+    // Rotation setup
+    img._rotation = Math.random() * 360;
+    img._rotationSpeed = (Math.random() * 3 - 1.5) * 6; // -9 to +9 deg/frame
+
+    img._birth = performance.now();
+
+    confettiArea.appendChild(img);
+    pieces.push(img);
+  }
+
+  // Burst confetti on a position (tap/click)
+  function burstConfetti(x, y, count = 20) {
+    for (let i = 0; i < count; i++) {
+      createPiece(x, y);
+    }
+  }
+
+  function updatePieces() {
+    const now = performance.now();
+    const maxX = confettiArea.clientWidth - pieceSize;
+    const maxY = confettiArea.clientHeight - pieceSize;
+
+    for (let i = pieces.length - 1; i >= 0; i--) {
+      const img = pieces[i];
+
+      // No gravity, just friction on velocity
+      img._velocityX *= friction;
+      img._velocityY *= friction;
+
+      // Move by velocity
+      img._x += img._velocityX;
+      img._y += img._velocityY;
+
+      // Bounce off edges and invert velocity on collision with damping
+      if (img._x <= 0) {
+        img._x = 0;
+        img._velocityX = -img._velocityX * 0.9;
+      } else if (img._x >= maxX) {
+        img._x = maxX;
+        img._velocityX = -img._velocityX * 0.9;
+      }
+      if (img._y <= 0) {
+        img._y = 0;
+        img._velocityY = -img._velocityY * 0.9;
+      } else if (img._y >= maxY) {
+        img._y = maxY;
+        img._velocityY = -img._velocityY * 0.9;
+      }
+
+      // Rotation update if enabled
+      if (rotationEnabled) {
+        img._rotation += img._rotationSpeed;
+        if (img._rotation >= 360) img._rotation -= 360;
+        if (img._rotation < 0) img._rotation += 360;
+      }
+
+      // Fade out after lifespan, then remove
+      const age = now - img._birth;
+      let opacity = 1;
+      if (age > lifeSpan) {
+        opacity = 1 - (age - lifeSpan) / 4000; // fade out over 4 seconds
+        if (opacity <= 0) {
+          confettiArea.removeChild(img);
+          pieces.splice(i, 1);
+          continue;
+        }
+      }
+
+      img.style.left = img._x + 'px';
+      img.style.top = img._y + 'px';
+      img.style.transform = `rotate(${img._rotation}deg)`;
+      img.style.opacity = opacity;
+    }
+  }
+
+  function loop() {
+    if (!isPaused) updatePieces();
+    requestAnimationFrame(loop);
   }
 
   function startSpawning() {
     clearInterval(spawnInterval);
     spawnInterval = setInterval(() => {
-      if (!isPaused) spawnPiece();
-    }, spawnRate);
+      if (!isPaused) createPiece();
+    }, 1000 / spawnRate);
   }
 
-  // Touch explode with cooldown to avoid flooding
-  let lastSpawnTime = 0;
-  document.body.addEventListener('pointerdown', (e) => {
-    const now = performance.now();
-    if (now - lastSpawnTime > 100) {  // 100ms cooldown
-      lastSpawnTime = now;
-      for (let i = 0; i < 10; i++) {
-        spawnPiece(e.clientX, e.clientY);
-      }
-      if (navigator.vibrate) navigator.vibrate(30); // haptic feedback
-    }
-  });
-
-  // Resize handling
-  window.addEventListener('resize', () => {
-    for (const p of pieces) {
-      p.x = Math.min(p.x, window.innerWidth - p.size);
-      p.y = Math.min(p.y, window.innerHeight - p.size);
-    }
-  });
-
-  // Controls handlers
-  rateSlider.oninput = () => {
-    spawnRate = parseInt(rateSlider.value);
+  // Event listeners for UI controls
+  rateSlider.addEventListener('input', e => {
+    spawnRate = +e.target.value;
     rateValue.textContent = spawnRate;
     startSpawning();
-  };
-
-  sizeSlider.oninput = () => {
-    baseSize = parseInt(sizeSlider.value);
-    sizeValue.textContent = baseSize;
-  };
-
-  pauseBtn.onclick = () => {
+  });
+  sizeSlider.addEventListener('input', e => {
+    pieceSize = +e.target.value;
+    sizeValue.textContent = pieceSize;
+    pieces.forEach(img => {
+      img.style.width = pieceSize + 'px';
+      img.style.height = pieceSize + 'px';
+    });
+  });
+  rotationToggle.addEventListener('change', e => {
+    rotationEnabled = e.target.checked;
+  });
+  pauseBtn.addEventListener('click', () => {
     isPaused = !isPaused;
     pauseBtn.textContent = isPaused ? '▶ Resume' : '⏸ Pause';
-  };
-
-  clearBtn.onclick = () => {
-    for (const p of pieces) p.el.remove();
+    pauseBtn.setAttribute('aria-pressed', isPaused);
+  });
+  clearBtn.addEventListener('click', () => {
+    pieces.forEach(img => confettiArea.removeChild(img));
     pieces.length = 0;
-  };
+  });
 
-  // Initialize value labels
-  rateValue.textContent = rateSlider.value;
-  sizeValue.textContent = sizeSlider.value;
+  // Keep pieces inside container on resize
+  window.addEventListener('resize', () => {
+    const maxX = confettiArea.clientWidth - pieceSize;
+    const maxY = confettiArea.clientHeight - pieceSize;
+    pieces.forEach(img => {
+      if (img._x > maxX) img._x = maxX;
+      if (img._y > maxY) img._y = maxY;
+    });
+  });
 
+  // Touch and mouse interaction - burst confetti on tap/click
+  function pointerHandler(evt) {
+    evt.preventDefault();
+    let rect = confettiArea.getBoundingClientRect();
+    let x = evt.clientX - rect.left - pieceSize / 2;
+    let y = evt.clientY - rect.top - pieceSize / 2;
+
+    // Clamp inside confetti area
+    x = Math.min(Math.max(x, 0), confettiArea.clientWidth - pieceSize);
+    y = Math.min(Math.max(y, 0), confettiArea.clientHeight - pieceSize);
+
+    burstConfetti(x, y, 25);
+  }
+  confettiArea.addEventListener('click', pointerHandler);
+  confettiArea.addEventListener('touchstart', pointerHandler);
+
+  // Init UI values and start animation
+  rateValue.textContent = spawnRate;
+  sizeValue.textContent = pieceSize;
   startSpawning();
-  update();
+  loop();
 })();
 </script>
-
 </body>
 </html>
