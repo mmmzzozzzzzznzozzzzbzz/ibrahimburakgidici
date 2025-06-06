@@ -4,13 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Ultimate Chaos Confetti</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
+    /* Reset & base */
     html, body {
       margin: 0; padding: 0;
       width: 100vw; height: 100vh;
       overflow: hidden;
-      background: black;
+      background: linear-gradient(135deg, #0a0a0a, #1a1a2e);
       touch-action: none;
+      font-family: 'Poppins', sans-serif;
+      color: #eee;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     .piece {
@@ -18,47 +24,147 @@
       object-fit: cover;
       pointer-events: none;
       will-change: transform;
+      filter: drop-shadow(0 0 1px rgba(0,0,0,0.7));
     }
 
     #controls {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: rgba(0,0,0,0.6);
-      color: white;
-      padding: 10px;
-      font-family: sans-serif;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(30, 30, 40, 0.6);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 16px 24px;
+      width: calc(100% - 32px);
+      max-width: 420px;
+      box-shadow: 0 8px 24px rgba(80, 75, 180, 0.4);
+      z-index: 9999;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      z-index: 9999;
+      gap: 16px;
+      user-select: none;
     }
 
     .control-group {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 12px;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 1rem;
+      flex-shrink: 0;
+      user-select: none;
     }
 
     input[type="range"] {
-      width: 60%;
-    }
-
-    button {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 8px;
       background: #444;
-      color: white;
-      border: none;
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 5px;
-      flex: 1;
-      margin: 2px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      flex-grow: 1;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      background: #6b5dd1;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 6px #6b5dd1;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      margin-top: -8px;
+    }
+    input[type="range"]:hover::-webkit-slider-thumb {
+      background: #927eee;
+      box-shadow: 0 0 10px #927eee;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      background: #6b5dd1;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 6px #6b5dd1;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
     }
 
     #button-row {
       display: flex;
-      gap: 5px;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    button {
+      flex: 1;
+      background: #6b5dd1;
+      border: none;
+      color: white;
+      padding: 14px 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(107, 93, 209, 0.6);
+      transition: background 0.3s ease, transform 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      user-select: none;
+    }
+    button:hover {
+      background: #836fe2;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(131, 111, 226, 0.8);
+    }
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 12px rgba(107, 93, 209, 0.6);
+    }
+
+    /* Larger touch targets on mobile */
+    @media (max-width: 480px) {
+      #controls {
+        padding: 20px 20px;
+        width: 95vw;
+        max-width: none;
+      }
+      button {
+        font-size: 1.2rem;
+        padding: 18px 0;
+      }
+      input[type="range"] {
+        height: 12px;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        width: 28px;
+        height: 28px;
+        margin-top: -10px;
+      }
+      input[type="range"]::-moz-range-thumb {
+        width: 28px;
+        height: 28px;
+      }
+    }
+
+    /* Numeric value display */
+    .value-label {
+      width: 36px;
+      text-align: right;
+      font-weight: 500;
+      color: #c1bff0;
+      user-select: none;
+      flex-shrink: 0;
+      font-size: 0.9rem;
+      font-feature-settings: "tnum";
     }
   </style>
 </head>
@@ -66,16 +172,18 @@
 
 <div id="controls">
   <div class="control-group">
-    <label>Spawn Rate</label>
+    <label for="rateSlider">Spawn Rate</label>
     <input type="range" id="rateSlider" min="10" max="200" value="50" />
+    <div class="value-label" id="rateValue">50</div>
   </div>
   <div class="control-group">
-    <label>Image Size</label>
+    <label for="sizeSlider">Image Size</label>
     <input type="range" id="sizeSlider" min="30" max="200" value="100" />
+    <div class="value-label" id="sizeValue">100</div>
   </div>
   <div id="button-row">
-    <button id="pauseBtn">Pause</button>
-    <button id="clearBtn">Clear All</button>
+    <button id="pauseBtn" aria-label="Pause Animation">⏸ Pause</button>
+    <button id="clearBtn" aria-label="Clear All Confetti">🗑 Clear All</button>
   </div>
 </div>
 
@@ -94,6 +202,8 @@
   const sizeSlider = document.getElementById('sizeSlider');
   const pauseBtn = document.getElementById('pauseBtn');
   const clearBtn = document.getElementById('clearBtn');
+  const rateValue = document.getElementById('rateValue');
+  const sizeValue = document.getElementById('sizeValue');
 
   function random(min, max) {
     return Math.random() * (max - min) + min;
@@ -116,7 +226,7 @@
     const px = x !== null ? x : random(0, w - size);
     const py = y !== null ? y : random(0, h - size);
 
-    img.style.transform = `translate(${px}px, ${py}px)`;
+    img.style.transform = `translate(${px}px, ${py}px) rotate(${random(0, 360)}deg)`;
     document.body.appendChild(img);
 
     pieces.push({
@@ -126,6 +236,8 @@
       size,
       vx: random(-2.5, 2.5) || 1.5,
       vy: random(-2.5, 2.5) || 1.5,
+      rotation: random(0, 360),
+      rotationSpeed: random(-4, 4),
       birth: performance.now()
     });
   }
@@ -140,14 +252,22 @@
 
       p.x += p.vx;
       p.y += p.vy;
+      p.rotation += p.rotationSpeed;
 
+      // Bounce off edges
       if (p.x < 0 || p.x > w - p.size) p.vx *= -1;
       if (p.y < 0 || p.y > h - p.size) p.vy *= -1;
 
       p.x = Math.max(0, Math.min(w - p.size, p.x));
       p.y = Math.max(0, Math.min(h - p.size, p.y));
 
-      p.el.style.transform = `translate(${p.x}px, ${p.y}px)`;
+      p.el.style.transform = `translate(${p.x}px, ${p.y}px) rotate(${p.rotation}deg)`;
+
+      // Fade out near lifespan end
+      const lifeRatio = (now - p.birth) / lifeSpan;
+      if (lifeRatio > 0.85) {
+        p.el.style.opacity = 1 - (lifeRatio - 0.85) / 0.15;
+      }
 
       if (now - p.birth > lifeSpan) {
         p.el.remove();
@@ -165,10 +285,16 @@
     }, spawnRate);
   }
 
-  // Touch explode
+  // Touch explode with cooldown to avoid flooding
+  let lastSpawnTime = 0;
   document.body.addEventListener('pointerdown', (e) => {
-    for (let i = 0; i < 10; i++) {
-      spawnPiece(e.clientX, e.clientY);
+    const now = performance.now();
+    if (now - lastSpawnTime > 100) {  // 100ms cooldown
+      lastSpawnTime = now;
+      for (let i = 0; i < 10; i++) {
+        spawnPiece(e.clientX, e.clientY);
+      }
+      if (navigator.vibrate) navigator.vibrate(30); // haptic feedback
     }
   });
 
@@ -180,25 +306,31 @@
     }
   });
 
-  // Controls
+  // Controls handlers
   rateSlider.oninput = () => {
     spawnRate = parseInt(rateSlider.value);
+    rateValue.textContent = spawnRate;
     startSpawning();
   };
 
   sizeSlider.oninput = () => {
     baseSize = parseInt(sizeSlider.value);
+    sizeValue.textContent = baseSize;
   };
 
   pauseBtn.onclick = () => {
     isPaused = !isPaused;
-    pauseBtn.textContent = isPaused ? 'Resume' : 'Pause';
+    pauseBtn.textContent = isPaused ? '▶ Resume' : '⏸ Pause';
   };
 
   clearBtn.onclick = () => {
     for (const p of pieces) p.el.remove();
     pieces.length = 0;
   };
+
+  // Initialize value labels
+  rateValue.textContent = rateSlider.value;
+  sizeValue.textContent = sizeSlider.value;
 
   startSpawning();
   update();
